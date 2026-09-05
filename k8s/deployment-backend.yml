@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-backend
+  namespace: chat-app
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-app
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: chat-app
+        tier: backend
+
+    spec:
+      containers:
+      - name: chatapp-backend
+        image: ajitsinghnegi/chatapp-backend:latest
+        ports:
+         - containerPort: 5001 
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: MONGODB_URI
+          value: "mongodb://root:root@mongodb-service:27017/dbname?authSource=admin"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: chatapp-secrets
+              key: jwt
+        - name: PORT
+          value: "5001"
+
